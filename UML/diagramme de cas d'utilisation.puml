@@ -1,0 +1,21 @@
+'Everything that starts with a simple quote 'is a comment. You can also put comments on several lines using/'to start and '/to end.
+
+'Start of UML diagram
+@startuml
+header Awesome PlantUML
+footer Page %page% of %lastpage%
+
+title Sequence Diagram
+' Scale determines the size of the output
+scale 1
+
+' A single dash in the arrow gives solid line
+Alice -> Bob: Authentication Request
+
+' A double dash in the arrow gives dotted line
+Bob --> Alice: Authentication Response
+
+Alice -> Bob: Another authentication Request
+Alice <-- Bob: Another authentication Response
+@enduml
+' End of UML diagram

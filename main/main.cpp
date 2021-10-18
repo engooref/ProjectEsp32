@@ -1,9 +1,13 @@
-#include "Arduino.h"
+#include "CServerHTTP.h"
+#include <iostream>
+
+using namespace std;
+
+void LauchServer() {
+    CServerHTTP();
+}
 
 extern "C" void app_main()
 {
-    initArduino();
-    pinMode(4, OUTPUT);
-    digitalWrite(4, HIGH);
-    // Do your own thing
+    LauchServer();
 }

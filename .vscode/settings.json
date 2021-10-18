@@ -5,7 +5,7 @@
     "idf.customExtraVars": "{\"OPENOCD_SCRIPTS\":\"C:\\\\Users\\\\arman\\\\.espressif\\\\tools\\\\openocd-esp32\\\\v0.10.0-esp32-20210401/openocd-esp32/share/openocd/scripts\",\"IDF_CCACHE_ENABLE\":\"1\"}",
     "idf.espIdfPathWin": "c:\\Users\\arman\\esp\\esp-idf",
     "idf.openOcdConfigs": "interface/ftdi/esp32_devkitj_v1.cfg,target/esp32.cfg",
-    "idf.portWin": "COM6",
+    "idf.portWin": "COM8",
     "idf.pythonBinPathWin": "C:\\Users\\arman\\.espressif\\python_env\\idf4.3_py3.8_env\\Scripts\\python.exe",
     "idf.toolsPathWin": "C:\\Users\\arman\\.espressif"
 }

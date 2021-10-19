@@ -13,6 +13,9 @@
 /**
  *  Inclusion des bibliothèques
  */
+#include <freertos/FreeRTOS.h>
+#include <freertos/event_groups.h>
+
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -24,6 +27,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <iostream>
 
 /**
  *  Déclaration des définitions pour le WiFi
@@ -43,7 +47,7 @@
 #define ESP_WIFI_SSID           "ESPA6F1"
 #define ESP_WIFI_PASSWORD       "TestEsp123"
 #define ESP_WIFI_CHANNEL        0
-#define ESP_WIFI_MAX_STA_CONN   6
+#define ESP_WIFI_MAX_STA_CONN   10
 
 
 /**
@@ -74,6 +78,7 @@ private:
 
 private:
     CWiFi m_WiFi;
+
 public:
     CServerHTTP();
     ~CServerHTTP();

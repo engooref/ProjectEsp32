@@ -1,11 +1,10 @@
 #include "CServerHTTP.h"
 
+using namespace std;
+
 const char* CServerHTTP::CWiFi::TAG = "WiFi"; //Tag WiFi utilisé pour les logs
 
-/**
- *  @brief Constructeur de la classe CWiFi
- * 
- */
+/** @brief Constructeur de la classe CWiFi */
 CServerHTTP::CWiFi::CWiFi(){
     
     esp_err_t ret = nvs_flash_init();
@@ -17,21 +16,19 @@ CServerHTTP::CWiFi::CWiFi(){
 
     //Initialisation de netif    
     ESP_ERROR_CHECK(esp_netif_init());
-    esp_netif_create_default_wifi_ap();
-
-    //création de la boucle d'événements
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &WiFiEvent,
-                                                        NULL,
-                                                        NULL));
-
+    esp_netif_create_default_wifi_ap();
 
     //Initialisation du WiFi
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
+    //création de la boucle d'événements
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &WiFiEvent,
+                                                        NULL,
+                                                        NULL));
 
 
     //Configuration du WiFi
@@ -43,8 +40,7 @@ CServerHTTP::CWiFi::CWiFi(){
             ESP_WIFI_CHANNEL,
             (strlen(ESP_WIFI_PASSWORD) > 0 ? WIFI_AUTH_WPA_WPA2_PSK : WIFI_AUTH_OPEN),
             0,
-            ESP_WIFI_MAX_STA_CONN,
-            400
+            ESP_WIFI_MAX_STA_CONN
         }
     };
 
@@ -54,11 +50,28 @@ CServerHTTP::CWiFi::CWiFi(){
 
     ESP_LOGI(TAG, "Mode : AP\tSSID : %s\t Password : %s",
              wifiConf.ap.ssid,  wifiConf.ap.password);
+
+
 }
 
+/** @brief Destructeur de la classe CWiFi */
 CServerHTTP::CWiFi::~CWiFi(){
+    ESP_ERROR_CHECK(esp_wifi_stop());
+    ESP_ERROR_CHECK(esp_wifi_deinit());
+
+
 }
 
+/**
+ *  @brief Gestion des événements WiFi.
+ *
+ *  Fonction statique appelée à chaque événement WiFi permettant de gérer les événements WiFi.
+ * 
+ *  @param arg : argument de la fonction
+ *  @param event_base : événement enregistré sur le WiFi
+ *  @param event_id : identifiant de l'événement
+ *  @param event_date : données de l'événément
+ */
 void CServerHTTP::CWiFi::WiFiEvent(void* arg, esp_event_base_t event_base,
                                    int32_t event_id, void* event_data)
 {
@@ -71,9 +84,13 @@ void CServerHTTP::CWiFi::WiFiEvent(void* arg, esp_event_base_t event_base,
     }
 }
 
+/** @brief Constructeur de la classe CServerHTTP */
 CServerHTTP::CServerHTTP()
 {
+
 }
 
+/** @brief Destructeur de la classe CServerHTTP */
 CServerHTTP::~CServerHTTP(){
+
 }

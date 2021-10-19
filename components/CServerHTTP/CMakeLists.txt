@@ -1,3 +1,3 @@
 idf_component_register(SRCS "CServerHTTP.cpp"
                        INCLUDE_DIRS  "include"
-                       REQUIRES nvs_flash log)
+                       REQUIRES nvs_flash log freertos)

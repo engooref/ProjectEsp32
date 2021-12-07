@@ -1,0 +1,55 @@
+main {
+  margin: 6rem auto;
+  width: 50%;
+}
+
+.boxCpuRam {
+  text-align: center;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border: dashed red;
+}
+
+.boxVersion {
+  margin-top: 3rem;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+#divAction {
+  margin-top: 1rem;
+
+}
+
+/* The Modal (background) */
+.modal {
+  padding-top: 20rem; /* Location of the box */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%!important;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover, .close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}

@@ -9,6 +9,20 @@
     "idf.pythonBinPathWin": "C:\\Users\\arman\\.espressif\\python_env\\idf4.3_py3.8_env\\Scripts\\python.exe",
     "idf.toolsPathWin": "C:\\Users\\arman\\.espressif",
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "*.inc": "cpp",
+        "string": "cpp",
+        "cerrno": "cpp",
+        "*.ipp": "cpp",
+        "deque": "cpp",
+        "vector": "cpp",
+        "array": "cpp",
+        "list": "cpp",
+        "unordered_map": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "ostream": "cpp",
+        "random": "cpp",
+        "typeinfo": "cpp"
     }
 }

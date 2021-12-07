@@ -13,42 +13,30 @@
 /**
  *  Inclusion des bibliothèques
  */
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/event_groups.h>
 
 #include "esp_system.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
-#include "esp_log.h"
+#include "esp_spiffs.h"
+#include "esp_vfs.h"
+#include "esp_http_server.h"
+
 #include "nvs_flash.h"
+
+#include <sys/param.h>
+#include <sys/unistd.h>
+#include <sys/stat.h>
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-#include <cstdio>
-#include <cstring>
-#include <iostream>
 
-/**
- *  Déclaration des définitions pour le WiFi
- *  
- *  @def ESP_WIFI_SSID
- *  @brief SSID utilisé pour le WiFi.
- *
- *  @def ESP_WIFI_PASSWORD
- *  @brief Mot de passe utilisé pour le WiFi.
- *
- *  @def ESP_WIFI_CHANNEL
- *  @brief Channel du WiFi (uniquement pour le mode AP).
- *
- *  @def ESP_WIFI_MAX_STA_CONN
- *  @brief Nombre maximum d'appareil pouvant se connecter (uniqument pour le mode AP).
- */
-#define ESP_WIFI_SSID           "ESPA6F1"
-#define ESP_WIFI_PASSWORD       "TestEsp123"
-#define ESP_WIFI_CHANNEL        0
-#define ESP_WIFI_MAX_STA_CONN   10
+#include "macro.hpp"
 
+#include "CTraitementJson.h"
 
 /**
  * @class CServerHTTP
@@ -67,21 +55,40 @@ private:
      */
     class CWiFi {
     public:
-        CWiFi();
+        CWiFi(CServerHTTP* pServ);
         ~CWiFi();
 
-        //Fonctions statique
+    private:
         static const char *TAG;
         static void WiFiEvent(void* arg, esp_event_base_t event_base,
                               int32_t event_id, void* event_data);
     };
 
 private:
-    CWiFi m_WiFi;
-
+    CWiFi* m_pWiFi;
+    httpd_handle_t m_serverHttpd;
+    CTraitementJson* m_pConfigurationJson;
 public:
     CServerHTTP();
     ~CServerHTTP();
+
+    void Run();
+    esp_err_t InitSPIFFS();
+
+    esp_err_t StartWebServer();
+    void StopWebServer();
+
+    static esp_err_t RestartHandler(httpd_req_t* req);
+    static esp_err_t GetSystemDataHandler(httpd_req_t* req);
+    static esp_err_t GetVersionHandler(httpd_req_t* req);
+    static esp_err_t ChangeParamHandler(httpd_req_t* req);
+    static esp_err_t StateHandler(httpd_req_t* req);
+    static esp_err_t GetHandler(httpd_req_t* req);
+
+
+private:
+    static const char* TAG;
+    static CServerHTTP* serverWeb;
 };
 
 #endif //CSERVERHTTP_H_

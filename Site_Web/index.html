@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>Panneau de contrôle ESP32</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="/Ressources/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="/CSS/index.css">
+    <link rel="stylesheet" href="/Bootstrap/bootstrap.min.css">
+  </head>
+  <body>
+    <div id="navbar"></div>
+    <main>
+      <h1>Bienvenue sur l'interface de l'ESP32</h1>
+      <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+              <th scope="col">Nom module</th>
+              <th scope="col">Etat</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">ESP32</th>
+            <td><span id="ESP32"></span></td>
+          </tr>
+          <tr>
+            <th scope="row">WiFi</th>
+            <td><span id="WiFi"></span></td>
+          </tr>
+          <tr>
+            <th scope="row">I2C</th>
+            <td><span id="I2C"></span></td>
+          </tr>
+          <tr>
+            <th scope="row">GPS</th>
+            <td><span id="GPS"></span></td>
+          </tr>
+          <tr>
+            <th scope="row">Radio</th>
+            <td><span id="Radio"></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+    <script src="/JavaScript/jquery-3.6.0.min.js"></script>
+    <script src="/Bootstrap/bootstrap.min.js"></script>
+    <script src="/JavaScript/index.js"></script>
+  </body>
+</html>

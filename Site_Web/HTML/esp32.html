@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>Panneau de contrôle ESP32</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="/Ressources/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="/CSS/esp32.css">
+    <link rel="stylesheet" href="/Bootstrap/bootstrap.min.css">
+  </head>
+  <body>
+    <div id="navbar"></div>
+    <main>
+        <div class="boxCpuRam">
+            <h5 style="width: 50%;">CPU Usage: <span id="cpuUsage">NaN</span></h5>
+            <h5 style="width: 50%;">RAM Usage: <span id="ramUsage">NaN</span></h5>
+            <div><progress id="cpuUsageBar" max="100"></progress></div>
+            <div><progress id="ramUsageBar" max="100"></progress></div>
+        </div>
+
+        <div class="boxVersion">
+            <h5 style="width: 50%;">Dernière Mise à jour: <span id="dateMaj">NaN</span></h5>
+            <h5 style="width: 50%;">Version du site: <span id="versSite">NaN</span></h5>
+            <h5 style="width: 50%;">Version du logiciel: <span id="versLog">NaN</span></h5>
+        </div>
+
+        <div id="divAction">
+            <div id="dicvPersist">
+                <input type="checkbox" id="persistData" name="persistData">
+                <label for="scales">Données persistantes</label>
+            </div>
+            <button type="button" class="btn btn-secondary" id="restartButton">Redémarrer</button>
+
+        </div>
+            <!-- The Modal -->
+        <div id="restartPopup" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <p>Redémarrage en cours, veuillez patientez</p>
+            </div>
+        </div>
+    </main>
+    <script src="/JavaScript/jquery-3.6.0.min.js"></script>
+    <script src="/Bootstrap/bootstrap.min.js"></script>
+    <script src="/JavaScript/esp32.js"></script>
+    </body>
+</html>

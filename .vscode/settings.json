@@ -23,6 +23,8 @@
         "initializer_list": "cpp",
         "ostream": "cpp",
         "random": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "chrono": "cpp",
+        "limits": "cpp"
     }
 }

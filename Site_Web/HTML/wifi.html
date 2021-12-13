@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <title>Panneau de contrôle ESP32</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/png" sizes="16x16" href="/Ressources/favicon.ico">
+        <link rel="stylesheet" type="text/css" href="/CSS/wifi.css">
+        <link rel="stylesheet" href="/Bootstrap/bootstrap.min.css">
+    </head>
+    <body>
+        <div id="navbar"></div>
+        <main>
+            <h1>Information WiFi</h1>
+            <table class="table table-striped table-bordered">
+                <tbody>
+                <tr>
+                    <th scope="row">SSID</th>
+                    <td><span id="ssid"></span></td>
+                </tr>
+                <tr>
+                    <th scope="row">Mode</th>
+                    <td><span id="modeWiFi"></span></td>
+                </tr>
+                <tr class="apMode">
+                    <th scope="row">Type d'authentification</th>
+                    <td><span id="authenWiFi"></span></td>
+                </tr>
+                <tr class="apMode">
+                    <th scope="row">Mot de passe</th>
+                    <td><span id="motDePasse"></span></td>
+                </tr>
+                <tr class="apMode"> 
+                    <th scope="row">Nombre de personnes connectées</th>
+                    <td><span id="nbAppConnect"></span></td>
+                </tr>
+                <tr class="apMode">
+                    <th scope="row">Nombre maximum de connexion</th>
+                    <td><span id="nbMaxConnect"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </main>
+        <script src="/JavaScript/jquery-3.6.0.min.js"></script>
+        <script src="/Bootstrap/bootstrap.min.js"></script>
+        <script src="/JavaScript/wifi.js"></script>
+    </body>
+</html>

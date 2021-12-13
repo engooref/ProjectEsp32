@@ -20,9 +20,13 @@ main {
   justify-content: flex-end;
 }
 
-#divAction {
+#boxAction {
   margin-top: 1rem;
-
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: flex-start;
+  align-items: flex-start;
 }
 
 /* The Modal (background) */

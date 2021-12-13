@@ -32,7 +32,7 @@ CTraitementJson::CTraitementJson(const char* nameFileJson) :
     fseek(m_fileJson, 0, SEEK_END);
     size_t lenghtFile = ftell(m_fileJson);
     if(lenghtFile){
-        ESP_LOGI(TAG, "Longueur du fichier: %doctets", lenghtFile);        
+        ESP_LOGI(TAG, "Longueur du fichier: %d octets", lenghtFile);        
         char* bufFile = (char*)malloc(lenghtFile);
         fseek(m_fileJson, 0, SEEK_SET);
 
@@ -57,6 +57,9 @@ CTraitementJson::~CTraitementJson(){
     if(m_nameFileJson) { free(m_nameFileJson); m_nameFileJson = nullptr; }
     if(m_fileJson) { fclose(m_fileJson); m_fileJson = NULL; }
     if(m_json) { cJSON_Delete(m_json); m_json = nullptr; }
+}
+cJSON* CTraitementJson::GetJson(){
+    return m_json;
 }
 
 cJSON* CTraitementJson::GetItem(char* name){
@@ -127,4 +130,30 @@ void CTraitementJson::PrintPropertyAndValues(){
         else if(cJSON_IsBool(item)) cout << ((item->type == cJSON_True) ? "true" : "false");
         cout << endl;
     }
+}
+
+char* CTraitementJson::SerializeJson(){
+    return cJSON_PrintUnformatted(m_json);
+}
+
+char* CTraitementJson::SerializePropertyJson(const char* property[]){
+    cJSON* js = cJSON_CreateObject();
+    
+    for(int i = 0; property[i] != nullptr; i++){
+        if(m_mapJsonKey.find((char*)property[i]) == m_mapJsonKey.end()){ ESP_LOGE(TAG, "Parametre inexistant passage au suivant, %s", property[i]); continue;};
+        cJSON* item = cJSON_GetArrayItem(m_json, m_mapJsonKey[(char*)property[i]]);
+        if(cJSON_IsString(item)) cJSON_AddStringToObject(js, property[i], cJSON_GetStringValue(item));
+        else if(cJSON_IsNumber(item)) cJSON_AddNumberToObject(js, property[i], cJSON_GetNumberValue(item));
+        else if(cJSON_IsBool(item)) cJSON_AddBoolToObject(js, property[i], (item->type == cJSON_True));
+    }
+
+    return cJSON_PrintUnformatted(js);
+}
+
+void CTraitementJson::DeserializeJson(char* strJson){
+    m_json = cJSON_Parse(strJson);
+}
+
+void CTraitementJson::DeserializeJson(char* strJson, int lenStr){
+    m_json = cJSON_ParseWithLength(strJson, lenStr);
 }

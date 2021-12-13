@@ -19,18 +19,23 @@
         </div>
 
         <div class="boxVersion">
-            <h5 style="width: 50%;">Dernière Mise à jour: <span id="dateMaj">NaN</span></h5>
-            <h5 style="width: 50%;">Version du site: <span id="versSite">NaN</span></h5>
-            <h5 style="width: 50%;">Version du logiciel: <span id="versLog">NaN</span></h5>
+            <h5 style="width: 50%;">Dernière Mise à jour: <span id="dateMajLast">NaN</span></h5>
+            <h5 style="width: 50%;">Version du site: <span id="versionSite">NaN</span></h5>
+            <h5 style="width: 50%;">Version du logiciel: <span id="versionLogiciel">NaN</span></h5>
         </div>
 
-        <div id="divAction">
-            <div id="dicvPersist">
-                <input type="checkbox" id="persistData" name="persistData">
-                <label for="scales">Données persistantes</label>
+        <div id="boxAction">
+            <div id="divSave">
+                <div id="divSaveSwitch">
+                    <label for="saveAuto" style="vertical-align: middle;">Sauvegarde Automatique: </label>
+                    <input type="checkbox" id="saveAuto">
+                </div>
+                <div id="divSaveInterval" style="display: none;">
+                    <label for="saveTime" style="vertical-align: middle;">Intervalle de Sauvegarde (minutes): </label>
+                    <input type="number" id="saveTime" min="0">
+                </div>
             </div>
             <button type="button" class="btn btn-secondary" id="restartButton">Redémarrer</button>
-
         </div>
             <!-- The Modal -->
         <div id="restartPopup" class="modal">

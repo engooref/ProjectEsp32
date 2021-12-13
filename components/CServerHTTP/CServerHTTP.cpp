@@ -1,12 +1,15 @@
 #include "CServerHTTP.h"
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
-
-
-
 const char* CServerHTTP::CWiFi::TAG = "WiFi"; //Tag WiFi utilisé pour les logs
 const char* CServerHTTP::TAG = "Serveur HTTP"; //Tag Serveur utilisé pour les logs
+const map<const char*, pf> CServerHTTP::uri = {{"/restart", &CServerHTTP::RestartHandler}, {"/getsystemdata", &CServerHTTP::GetSystemDataHandler}, {"/getversion", &CServerHTTP::GetVersionHandler}, 
+                                               {"/changeparam", &CServerHTTP::ChangeParamHandler}, {"/state", &CServerHTTP::StateHandler}, {"/getwifiattr", &CServerHTTP::GetWiFiAttrHandler},
+                                               {"/*", &CServerHTTP::GetHandler}};
+
 CServerHTTP* CServerHTTP::serverWeb = nullptr;
 
 static char* get_path_from_uri(char *dest, const char *base_path, const char *uri, size_t destsize);
@@ -53,12 +56,13 @@ CServerHTTP::CWiFi::CWiFi(CServerHTTP* pServ){
         }
     };
 
+    m_configWiFi = wifiConf;
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifiConf));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &m_configWiFi));
     ESP_ERROR_CHECK(esp_wifi_start());
 
     ESP_LOGI(TAG, "Mode : AP\tSSID : %s\t Password : %s",
-             wifiConf.ap.ssid,  wifiConf.ap.password);
+             m_configWiFi.ap.ssid,  m_configWiFi.ap.password);
 }
 
 /** @brief Destructeur de la classe CWiFi */
@@ -96,22 +100,50 @@ void CServerHTTP::CWiFi::WiFiEvent(void* arg, esp_event_base_t event_base,
     }
 }
 
+char* CServerHTTP::CWiFi::GetSsid(){
+    if(GetMode() == WIFI_MODE_AP) return (char*)m_configWiFi.ap.ssid;
+    else if (GetMode() == WIFI_MODE_STA) return (char*)m_configWiFi.sta.ssid;
+    else return nullptr;
+}
+
+char* CServerHTTP::CWiFi::GetMotDePasse(){
+    if(GetMode() == WIFI_MODE_AP) return (char*)m_configWiFi.ap.password;
+    else return nullptr;
+}
+
+wifi_mode_t CServerHTTP::CWiFi::GetMode(){
+    wifi_mode_t wifiMode;
+    ESP_ERROR_CHECK(esp_wifi_get_mode(&wifiMode));
+    return wifiMode;
+}
+
+wifi_auth_mode_t CServerHTTP::CWiFi::GetAuth(){
+    if(GetMode() == WIFI_MODE_AP) return m_configWiFi.ap.authmode;
+    else return WIFI_AUTH_MAX;
+}
+
+uint8_t CServerHTTP::CWiFi::GetNbStaMax(){
+    if(GetMode() == WIFI_MODE_AP) return m_configWiFi.ap.max_connection;
+    else return -1;
+}
+
+int CServerHTTP::CWiFi::GetNbStaConnect(){
+    if(GetMode() == WIFI_MODE_AP){
+        wifi_sta_list_t wifiStaList;
+        ESP_ERROR_CHECK(esp_wifi_ap_get_sta_list(&wifiStaList));
+        return wifiStaList.num;
+    } else { return -1; }
+}
+
 /** @brief Constructeur de la classe CServerHTTP */
 CServerHTTP::CServerHTTP() :
     m_pWiFi(nullptr)
 { 
-    CServerHTTP::serverWeb = this;
     ESP_ERROR_CHECK(InitSPIFFS());
+    CServerHTTP::serverWeb = this;
     m_pWiFi = new CWiFi(this);
 
     m_pConfigurationJson = new CTraitementJson((BASE_PATH + "/" + NAME_FILE_CONF).c_str());
-    cout << endl;
-    m_pConfigurationJson->PrintPropertyAndValues();
-    cout << "Modification" << endl;
-    m_pConfigurationJson->ModifyElement((char*)"versionSite", (char*)"guirb");
-    m_pConfigurationJson->PrintPropertyAndValues();
-    cout << endl;
-
     Run();
 }
 
@@ -172,61 +204,25 @@ esp_err_t CServerHTTP::StartWebServer(){
     config.server_port = ESP_WEB_SERVER_PORT;
     config.uri_match_fn = httpd_uri_match_wildcard;
 
-    // pour une requête GET /*
-    httpd_uri_t uri_get = {
-        .uri      = "/*",
-        .method   = HTTP_GET,
-        .handler  = GetHandler,
-        .user_ctx = NULL
-    };
-    
-    httpd_uri_t uri_state = {
-        .uri      = "/state",
-        .method   = HTTP_GET,
-        .handler  = StateHandler,
-        .user_ctx = NULL
-    };
+    vector<httpd_uri_t> uriVec;
+    for(auto itMap = uri.begin(); itMap != uri.end(); ++itMap){
+        uriVec.push_back((httpd_uri_t){
+            .uri      = itMap->first,
+            .method   = HTTP_GET,
+            .handler  = itMap->second,
+            .user_ctx = NULL
+        });
+    }
 
-    httpd_uri_t uri_restart = {
-        .uri      = "/restart",
-        .method   = HTTP_GET,
-        .handler  = RestartHandler,
-        .user_ctx = NULL
-    };
-
-    httpd_uri_t uri_getSystemData = {
-        .uri      = "/getsystemdata",
-        .method   = HTTP_GET,
-        .handler  = GetSystemDataHandler,
-        .user_ctx = NULL
-    };
-
-    httpd_uri_t uri_getVersion = {
-        .uri      = "/getversion",
-        .method   = HTTP_GET,
-        .handler  = GetVersionHandler,
-        .user_ctx = NULL
-    };
-
-    httpd_uri_t uri_changeParam = {
-        .uri      = "/changeParam",
-        .method   = HTTP_GET,
-        .handler  = ChangeParamHandler,
-        .user_ctx = NULL
-    };
- 
     esp_err_t ret = httpd_start(&m_serverHttpd, &config);
 
     // Démarre le serveur HTTP
     if (ret == ESP_OK) 
     {
         // enregistre les gestionnaires d'URI
-        httpd_register_uri_handler(m_serverHttpd, &uri_restart);
-        httpd_register_uri_handler(m_serverHttpd, &uri_getSystemData);
-        httpd_register_uri_handler(m_serverHttpd, &uri_getVersion);
-        httpd_register_uri_handler(m_serverHttpd, &uri_changeParam);
-        httpd_register_uri_handler(m_serverHttpd, &uri_state);
-        httpd_register_uri_handler(m_serverHttpd, &uri_get);
+        for(int i = 0; i < uriVec.size(); i++){
+            httpd_register_uri_handler(m_serverHttpd, &(uriVec[i]));
+        }
         
         //httpd_register_uri_handler(m_serverHttpd, &uri_post);
         ESP_LOGI(TAG, "Serveur Web demarrer sur le port: %d", config.server_port);
@@ -250,6 +246,11 @@ esp_err_t CServerHTTP::GetSystemDataHandler(httpd_req_t* req){
 
 esp_err_t CServerHTTP::GetVersionHandler(httpd_req_t* req){
     
+    const char* propArray[] = {"versionLogiciel", "versionSite", "dateMajLast", "saveAuto", "saveTime"};
+    char* buf = CServerHTTP::serverWeb->m_pConfigurationJson->SerializePropertyJson(propArray);
+
+    httpd_resp_send(req, buf, strlen(buf));
+    free(buf);
     return ESP_OK;
 }
 
@@ -259,16 +260,35 @@ esp_err_t CServerHTTP::ChangeParamHandler(httpd_req_t* req){
 }
 
 esp_err_t CServerHTTP::StateHandler(httpd_req_t* req){
-    cJSON* resp = cJSON_CreateObject();
-    cJSON_AddTrueToObject(resp, "#ESP32");
-    cJSON_AddBoolToObject(resp, "#WiFi", CServerHTTP::serverWeb->m_pWiFi != nullptr);
-    cJSON_AddBoolToObject(resp, "#I2C" , nullptr != nullptr);
-    cJSON_AddBoolToObject(resp, "#GPS" , nullptr != nullptr);
-    cJSON_AddBoolToObject(resp, "#Radio", nullptr != nullptr);
+    CTraitementJson js;
+    js.AddElement((char*)"#ESP32", true);
+    js.AddElement((char*)"#WiFi", (CServerHTTP::serverWeb->m_pWiFi != nullptr));
+    js.AddElement((char*)"#I2C" , (nullptr != nullptr));
+    js.AddElement((char*)"#GPS" , (nullptr != nullptr));
+    js.AddElement((char*)"#Radio", (nullptr != nullptr));
 
-    char* buf = cJSON_Print(resp);
-    cJSON_Delete(resp);
+    char* buf = js.SerializeJson();
     httpd_resp_send(req, buf, strlen(buf));
+    free(buf);
+    return ESP_OK;
+}
+
+esp_err_t CServerHTTP::GetWiFiAttrHandler(httpd_req_t* req){
+    CTraitementJson js;
+
+    js.AddElement((char*)"#ssid", CServerHTTP::serverWeb->m_pWiFi->GetSsid());
+    js.AddElement((char*)"#modeWiFi", (double)CServerHTTP::serverWeb->m_pWiFi->GetMode());
+
+    if(CServerHTTP::serverWeb->m_pWiFi->GetMode() == WIFI_MODE_AP) {
+        js.AddElement((char*)"#authenWiFi", (double)CServerHTTP::serverWeb->m_pWiFi->GetAuth());
+        js.AddElement((char*)"#motDePasse", CServerHTTP::serverWeb->m_pWiFi->GetMotDePasse());
+        js.AddElement((char*)"#nbMaxConnect", (double)CServerHTTP::serverWeb->m_pWiFi->GetNbStaMax());
+        js.AddElement((char*)"#nbAppConnect", (double)CServerHTTP::serverWeb->m_pWiFi->GetNbStaConnect());
+    }
+
+    char* buf = js.SerializeJson();
+    httpd_resp_send(req, buf, strlen(buf));
+    free(buf);
     return ESP_OK;
 }
 

@@ -33,10 +33,11 @@
 #include "lwip/err.h"
 #include "lwip/sys.h"
 
-
 #include "macro.hpp"
 
 #include "CTraitementJson.h"
+
+typedef esp_err_t(*pf)(httpd_req_t*);
 
 /**
  * @class CServerHTTP
@@ -54,9 +55,20 @@ private:
      *  Cette classe gère le WiFi ainsi que les événements liés à celui-ci
      */
     class CWiFi {
+    private:
+        wifi_config_t m_configWiFi;
     public:
         CWiFi(CServerHTTP* pServ);
         ~CWiFi();
+
+        char* GetSsid();
+        char* GetMotDePasse();
+
+        wifi_auth_mode_t GetAuth();
+        wifi_mode_t   GetMode();
+
+        uint8_t   GetNbStaMax();
+        int   GetNbStaConnect();
 
     private:
         static const char *TAG;
@@ -68,6 +80,7 @@ private:
     CWiFi* m_pWiFi;
     httpd_handle_t m_serverHttpd;
     CTraitementJson* m_pConfigurationJson;
+
 public:
     CServerHTTP();
     ~CServerHTTP();
@@ -77,18 +90,20 @@ public:
 
     esp_err_t StartWebServer();
     void StopWebServer();
-
+    
     static esp_err_t RestartHandler(httpd_req_t* req);
     static esp_err_t GetSystemDataHandler(httpd_req_t* req);
     static esp_err_t GetVersionHandler(httpd_req_t* req);
     static esp_err_t ChangeParamHandler(httpd_req_t* req);
     static esp_err_t StateHandler(httpd_req_t* req);
+    static esp_err_t GetWiFiAttrHandler(httpd_req_t* req);
     static esp_err_t GetHandler(httpd_req_t* req);
-
+    
 
 private:
     static const char* TAG;
     static CServerHTTP* serverWeb;
+    static const std::map<const char*, pf> uri;
 };
 
 #endif //CSERVERHTTP_H_

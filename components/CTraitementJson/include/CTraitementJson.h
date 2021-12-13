@@ -33,7 +33,9 @@ public:
     CTraitementJson(cJSON* json);
     ~CTraitementJson();
 
+    cJSON* GetJson();
     cJSON* GetItem(char* name);
+
     double GetNumberToProperty(char* nameProperty);
     char* GetStringToProperty(char* nameProperty);
     bool GetBoolToProperty(char* nameProperty);
@@ -51,6 +53,12 @@ public:
     void ActKeyJson();
 
     void PrintPropertyAndValues();
+
+    char* SerializeJson();
+    char* SerializePropertyJson(const char* property[]);
+
+    void DeserializeJson(char* strJson);
+    void DeserializeJson(char* strJson, int lenStr);
 
     
 private:

@@ -2,8 +2,36 @@ $("#navbar").load("/HTML/navbar.html");
 //intervalId = setInterval(getData, 1000);
 
 
+$("#saveAuto").click(function() {
+    if($("#saveAuto").is(':checked')){
+        $("#divSaveInterval").show();
+    } else {
+        $("#divSaveInterval").hide();
+    }
+});
+
 $.get("/getversion", function(data){
-    console.log(data);
+    JSON.parse(data, (name, value) => {
+        if(name) {
+            if(name === "saveTime") {
+                $("#" + name).val(value);
+            } else if (name === "saveAuto") {
+                $("#" + name).prop('checked', value);
+                if($("#saveAuto").is(':checked')){
+                    $("#divSaveInterval").show();
+                } else {
+                    $("#divSaveInterval").hide();
+                }
+            } else {
+                if(typeof(value) === "number") {
+                    if(!Number.isNaN(Number.parseInt(value))){ 
+                        value = value.toFixed(1);
+                    }
+                }
+                $("#"+ name).text(value);
+            }
+        }
+    });
 });
 
 function getData(){
